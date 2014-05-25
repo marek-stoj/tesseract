@@ -66,10 +66,23 @@ namespace Tesseract.Interop
 		                              IntPtr configs, int configs_size,
 		                              IntPtr vars_vec, int vars_vec_size, 
 		                              IntPtr vars_values, int vars_values_size);
-		
-		
+
+    
+    public static int BaseApiSetVariable(HandleRef handle, string name, string value) {
+      IntPtr valuePtr = IntPtr.Zero;
+      try {
+        valuePtr = MarshalHelper.StringToPtr(value, Encoding.UTF8);
+        return BaseApiSetVariableInternal(handle, name, valuePtr);
+      }
+      finally {
+        if (valuePtr != IntPtr.Zero) {
+          Marshal.FreeHGlobal(valuePtr);
+        }
+      }
+    }
+
 		[DllImport(Constants.TesseractDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint="TessBaseAPISetVariable")]
-		public static extern int BaseApiSetVariable(HandleRef handle, string name, string value);
+    private static extern int BaseApiSetVariableInternal(HandleRef handle, string name, IntPtr value);
 		
 		
 		[DllImport(Constants.TesseractDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint="TessBaseAPISetDebugVariable")]
